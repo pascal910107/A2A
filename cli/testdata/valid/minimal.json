@@ -10,7 +10,8 @@
     {
       "id": "default",
       "name": "Default Skill",
-      "description": "The default skill"
+      "description": "The default skill",
+      "tags": ["default"]
     }
   ]
 }

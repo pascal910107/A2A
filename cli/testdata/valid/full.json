@@ -45,11 +45,11 @@
   "supportedInterfaces": [
     {
       "url": "https://recipes.example.com/a2a",
-      "transport": "jsonrpc"
+      "protocolBinding": "JSONRPC"
     },
     {
       "url": "https://recipes.example.com/a2a/grpc",
-      "transport": "grpc"
+      "protocolBinding": "GRPC"
     }
   ],
   "provider": {

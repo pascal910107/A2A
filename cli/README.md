@@ -39,6 +39,17 @@ a2a generate --name "My Agent" --description "A helpful agent" --version "2.0.0"
 
 # Add skills
 a2a generate --skill "translate:Translate:Translate text between languages"
+# Skill format supports optional tags
+a2a generate --skill "translate:Translate:Translate text between languages:language,translation"
+
+# Set protocol binding for an endpoint
+a2a generate --url "https://agent.example.com/a2a" --protocol-binding "HTTP+JSON"
+
+# Generate minimal template (required fields only)
+a2a generate --minimal
+
+# Generate full example template with all optional fields
+a2a generate --full
 
 # Output as YAML
 a2a generate --format yaml -o agent-card.yaml

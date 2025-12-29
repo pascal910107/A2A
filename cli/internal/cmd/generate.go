@@ -14,9 +14,12 @@ var (
 	generateDescription string
 	generateVersion     string
 	generateURL         string
+	generateProtocol    string
+	generateTenant      string
 	generateSkills      []string
 	generateFormat      string
 	generateMinimal     bool
+	generateFull        bool
 )
 
 // NewGenerateCmd creates the generate command.
@@ -40,7 +43,10 @@ Examples:
   a2a generate -f yaml -s "search:Search:Search for recipes" agent-card.yaml
 
   # Generate minimal template
-  a2a generate --minimal`,
+  a2a generate --minimal
+
+  # Generate full example template with all optional fields
+  a2a generate --full`,
 		Args: cobra.MaximumNArgs(1),
 		RunE: runGenerate,
 	}
@@ -54,12 +60,18 @@ Examples:
 		"Agent version")
 	cmd.Flags().StringVarP(&generateURL, "url", "u", "",
 		"Agent endpoint URL")
+	cmd.Flags().StringVar(&generateProtocol, "protocol-binding", "JSONRPC",
+		"Protocol binding for the agent endpoint (e.g., JSONRPC, GRPC, HTTP+JSON)")
+	cmd.Flags().StringVar(&generateTenant, "tenant", "",
+		"Optional tenant value required by the interface")
 	cmd.Flags().StringArrayVarP(&generateSkills, "skill", "s", nil,
-		"Add skill (format: id:name:description)")
+		"Add skill (format: id:name:description[:tag1,tag2])")
 	cmd.Flags().StringVarP(&generateFormat, "format", "f", "json",
 		"Output format: json, yaml")
 	cmd.Flags().BoolVarP(&generateMinimal, "minimal", "m", false,
 		"Generate minimal template (required fields only)")
+	cmd.Flags().BoolVar(&generateFull, "full", false,
+		"Generate full example template with all optional fields")
 
 	return cmd
 }
@@ -76,20 +88,36 @@ func runGenerate(cmd *cobra.Command, args []string) error {
 		format = output.FormatJSON
 	}
 
-	// Build template options
-	opts := agentcard.TemplateOptions{
-		Name:        generateName,
-		Description: generateDescription,
-		Version:     generateVersion,
-		URL:         generateURL,
-		Skills:      generateSkills,
-		Minimal:     generateMinimal,
+	// Check for conflicting flags
+	if generateMinimal && generateFull {
+		return fmt.Errorf("cannot use --minimal and --full together")
 	}
 
-	// Generate the template
-	card, err := agentcard.GenerateTemplate(opts)
-	if err != nil {
-		return fmt.Errorf("failed to generate template: %w", err)
+	var card *agentcard.AgentCard
+
+	// Use predefined templates if requested
+	if generateFull {
+		card = agentcard.GenerateFullTemplate()
+	} else if generateMinimal {
+		card = agentcard.GenerateMinimalTemplate()
+	} else {
+		// Build template options
+		opts := agentcard.TemplateOptions{
+			Name:            generateName,
+			Description:     generateDescription,
+			Version:         generateVersion,
+			URL:             generateURL,
+			ProtocolBinding: generateProtocol,
+			Tenant:          generateTenant,
+			Skills:          generateSkills,
+			Minimal:         generateMinimal,
+		}
+
+		// Generate the template
+		card, err = agentcard.GenerateTemplate(opts)
+		if err != nil {
+			return fmt.Errorf("failed to generate template: %w", err)
+		}
 	}
 
 	// Determine output destination

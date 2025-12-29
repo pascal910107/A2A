@@ -7,21 +7,24 @@ import (
 
 // TemplateOptions configures template generation.
 type TemplateOptions struct {
-	Name        string
-	Description string
-	Version     string
-	URL         string
-	Skills      []string // Format: "id:name:description"
-	Minimal     bool
+	Name            string
+	Description     string
+	Version         string
+	URL             string
+	ProtocolBinding string
+	Tenant          string
+	Skills          []string // Format: "id:name:description[:tag1,tag2]"
+	Minimal         bool
 }
 
 // DefaultTemplateOptions returns default template options.
 func DefaultTemplateOptions() TemplateOptions {
 	return TemplateOptions{
-		Name:        "My Agent",
-		Description: "An A2A agent",
-		Version:     "1.0.0",
-		Minimal:     false,
+		Name:            "My Agent",
+		Description:     "An A2A agent",
+		Version:         "1.0.0",
+		ProtocolBinding: "JSONRPC",
+		Minimal:         false,
 	}
 }
 
@@ -52,6 +55,7 @@ func GenerateTemplate(opts TemplateOptions) (*AgentCard, error) {
 				ID:          "default",
 				Name:        "Default Skill",
 				Description: "Default agent skill",
+				Tags:        []string{"default"},
 			},
 		}
 	}
@@ -64,10 +68,16 @@ func GenerateTemplate(opts TemplateOptions) (*AgentCard, error) {
 		}
 
 		if opts.URL != "" {
+			binding := opts.ProtocolBinding
+			if binding == "" {
+				binding = DefaultTemplateOptions().ProtocolBinding
+			}
+
 			card.SupportedInterfaces = []AgentInterface{
 				{
-					URL:       opts.URL,
-					Transport: "jsonrpc",
+					URL:             opts.URL,
+					ProtocolBinding: binding,
+					Tenant:          opts.Tenant,
 				},
 			}
 		}
@@ -76,7 +86,7 @@ func GenerateTemplate(opts TemplateOptions) (*AgentCard, error) {
 	return card, nil
 }
 
-// parseSkills parses skills from the "id:name:description" format.
+// parseSkills parses skills from the "id:name:description[:tags]" format.
 func parseSkills(skillStrings []string) ([]AgentSkill, error) {
 	var skills []AgentSkill
 
@@ -91,16 +101,20 @@ func parseSkills(skillStrings []string) ([]AgentSkill, error) {
 	return skills, nil
 }
 
-// ParseSkill parses a single skill from the "id:name:description" format.
+// ParseSkill parses a single skill from the "id:name:description[:tag1,tag2]" format.
 func ParseSkill(s string) (*AgentSkill, error) {
-	parts := strings.SplitN(s, ":", 3)
+	parts := strings.SplitN(s, ":", 4)
 	if len(parts) < 3 {
-		return nil, fmt.Errorf("invalid skill format: %q (expected id:name:description)", s)
+		return nil, fmt.Errorf("invalid skill format: %q (expected id:name:description[:tags])", s)
 	}
 
 	id := strings.TrimSpace(parts[0])
 	name := strings.TrimSpace(parts[1])
 	description := strings.TrimSpace(parts[2])
+	tagString := ""
+	if len(parts) == 4 {
+		tagString = strings.TrimSpace(parts[3])
+	}
 
 	if id == "" {
 		return nil, fmt.Errorf("skill ID cannot be empty")
@@ -112,11 +126,34 @@ func ParseSkill(s string) (*AgentSkill, error) {
 		return nil, fmt.Errorf("skill description cannot be empty")
 	}
 
+	tags := parseTags(tagString)
+	if len(tags) == 0 {
+		tags = []string{id}
+	}
+
 	return &AgentSkill{
 		ID:          id,
 		Name:        name,
 		Description: description,
+		Tags:        tags,
 	}, nil
+}
+
+func parseTags(tagString string) []string {
+	if tagString == "" {
+		return nil
+	}
+
+	raw := strings.Split(tagString, ",")
+	tags := make([]string, 0, len(raw))
+	for _, tag := range raw {
+		tag = strings.TrimSpace(tag)
+		if tag != "" {
+			tags = append(tags, tag)
+		}
+	}
+
+	return tags
 }
 
 // GenerateMinimalTemplate creates a minimal Agent Card template.
@@ -155,8 +192,8 @@ func GenerateFullTemplate() *AgentCard {
 		},
 		SupportedInterfaces: []AgentInterface{
 			{
-				URL:       "https://example.com/a2a",
-				Transport: "jsonrpc",
+				URL:             "https://example.com/a2a",
+				ProtocolBinding: "JSONRPC",
 			},
 		},
 		Provider: &AgentProvider{

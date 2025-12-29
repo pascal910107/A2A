@@ -25,6 +25,9 @@ type AgentCard struct {
 	SupportsExtendedAgentCard bool                      `json:"supportsExtendedAgentCard,omitempty" yaml:"supportsExtendedAgentCard,omitempty"`
 	Signatures                []AgentCardSignature      `json:"signatures,omitempty" yaml:"signatures,omitempty"`
 	IconURL                   string                    `json:"iconUrl,omitempty" yaml:"iconUrl,omitempty"`
+	URL                       string                    `json:"url,omitempty" yaml:"url,omitempty"` // Deprecated: use supportedInterfaces
+	PreferredTransport        string                    `json:"preferredTransport,omitempty" yaml:"preferredTransport,omitempty"`
+	AdditionalInterfaces      []AgentInterface          `json:"additionalInterfaces,omitempty" yaml:"additionalInterfaces,omitempty"`
 }
 
 // AgentCapabilities defines optional capabilities supported by an agent.
@@ -51,16 +54,19 @@ type AgentSkill struct {
 	Description string `json:"description" yaml:"description"`
 
 	// Optional fields
-	Tags        []string `json:"tags,omitempty" yaml:"tags,omitempty"`
-	InputModes  []string `json:"inputModes,omitempty" yaml:"inputModes,omitempty"`
-	OutputModes []string `json:"outputModes,omitempty" yaml:"outputModes,omitempty"`
-	Examples    []string `json:"examples,omitempty" yaml:"examples,omitempty"`
+	Tags        []string   `json:"tags,omitempty" yaml:"tags,omitempty"`
+	InputModes  []string   `json:"inputModes,omitempty" yaml:"inputModes,omitempty"`
+	OutputModes []string   `json:"outputModes,omitempty" yaml:"outputModes,omitempty"`
+	Examples    []string   `json:"examples,omitempty" yaml:"examples,omitempty"`
+	Security    []Security `json:"security,omitempty" yaml:"security,omitempty"`
 }
 
 // AgentInterface represents an endpoint interface for the agent.
 type AgentInterface struct {
-	URL       string `json:"url" yaml:"url"`
-	Transport string `json:"transport,omitempty" yaml:"transport,omitempty"` // "jsonrpc", "grpc", "rest"
+	URL             string `json:"url" yaml:"url"`
+	ProtocolBinding string `json:"protocolBinding,omitempty" yaml:"protocolBinding,omitempty"`
+	Tenant          string `json:"tenant,omitempty" yaml:"tenant,omitempty"`
+	Transport       string `json:"transport,omitempty" yaml:"transport,omitempty"` // Deprecated: use protocolBinding
 }
 
 // AgentProvider represents the service provider of an agent.

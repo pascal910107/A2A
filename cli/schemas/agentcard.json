@@ -92,6 +92,22 @@
         "$ref": "#/definitions/AgentInterface"
       }
     },
+    "url": {
+      "type": "string",
+      "description": "Deprecated: original single interface URL",
+      "format": "uri"
+    },
+    "preferredTransport": {
+      "type": "string",
+      "description": "Deprecated: preferred transport for the single interface entry"
+    },
+    "additionalInterfaces": {
+      "type": "array",
+      "description": "Deprecated: additional interfaces, use supportedInterfaces instead",
+      "items": {
+        "$ref": "#/definitions/AgentInterface"
+      }
+    },
     "provider": {
       "$ref": "#/definitions/AgentProvider"
     },
@@ -111,7 +127,7 @@
       "type": "array",
       "description": "Security requirements for contacting the agent",
       "items": {
-        "type": "object"
+        "$ref": "#/definitions/SecurityRequirement"
       }
     },
     "supportsExtendedAgentCard": {
@@ -135,7 +151,7 @@
   "definitions": {
     "AgentSkill": {
       "type": "object",
-      "required": ["id", "name", "description"],
+      "required": ["id", "name", "description", "tags"],
       "properties": {
         "id": {
           "type": "string",
@@ -154,6 +170,7 @@
         },
         "tags": {
           "type": "array",
+          "minItems": 1,
           "items": {
             "type": "string"
           }
@@ -175,22 +192,36 @@
           "items": {
             "type": "string"
           }
+        },
+        "security": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/SecurityRequirement"
+          }
         }
       },
       "additionalProperties": false
     },
     "AgentInterface": {
       "type": "object",
-      "required": ["url"],
+      "required": ["url", "protocolBinding"],
       "properties": {
         "url": {
           "type": "string",
-          "description": "The URL of the interface"
+          "description": "The URL of the interface",
+          "format": "uri"
+        },
+        "protocolBinding": {
+          "type": "string",
+          "description": "Protocol binding supported at this URL (e.g., JSONRPC, GRPC, HTTP+JSON)"
+        },
+        "tenant": {
+          "type": "string",
+          "description": "Tenant identifier required by the interface"
         },
         "transport": {
           "type": "string",
-          "description": "The transport protocol",
-          "enum": ["jsonrpc", "grpc", "rest"]
+          "description": "Deprecated: legacy transport identifier"
         }
       },
       "additionalProperties": false
@@ -229,6 +260,22 @@
         "params": {
           "type": "object",
           "description": "Extension-specific configuration parameters"
+        }
+      },
+      "additionalProperties": false
+    },
+    "SecurityRequirement": {
+      "type": "object",
+      "description": "Security requirements mapping scheme names to scopes",
+      "properties": {
+        "schemes": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
         }
       },
       "additionalProperties": false
