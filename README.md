@@ -16,13 +16,13 @@
 
 **An open protocol enabling communication and interoperability between opaque agentic applications.**
 
-The Agent2Agent (A2A) protocol addresses a critical challenge in the AI landscape: enabling gen AI agents, built on diverse frameworks by different companies running on separate servers, to communicate and collaborate effectively - as agents, not just as tools. A2A aims to provide a common language for agents, fostering a more interconnected, powerful, and innovative AI ecosystem.
+The Agent2Agent (A2A) protocol addresses a critical challenge in the AI landscape: enabling Gen AI agents, built on diverse frameworks by different companies running on separate servers, to communicate and collaborate effectively - as agents, not just as tools. A2A aims to provide a common language for agents, fostering a more interconnected, powerful, and innovative AI ecosystem.
 
 With A2A, agents can:
 
 - Discover each other's capabilities.
 - Negotiate interaction modalities (text, forms, media).
-- Securely collaborate on long running tasks.
+- Securely collaborate on long-running tasks.
 - Operate without exposing their internal state, memory, or tools.
 
 ## Intro to A2A Video
@@ -54,7 +54,7 @@ As AI agents become more prevalent, their ability to interoperate is crucial for
     - [🐍 A2A Python SDK](https://github.com/a2aproject/a2a-python) `pip install a2a-sdk`
     - [🐿️ A2A Go SDK](https://github.com/a2aproject/a2a-go) `go get github.com/a2aproject/a2a-go`
     - [🧑‍💻 A2A JS SDK](https://github.com/a2aproject/a2a-js) `npm install @a2a-js/sdk`
-    - [☕️ A2A Java SDK](https://github.com/a2aproject/a2a-java) using maven
+    - [☕️ A2A Java SDK](https://github.com/a2aproject/a2a-java) using Maven
     - [🔷 A2A .NET SDK](https://github.com/a2aproject/a2a-dotnet) using [NuGet](https://www.nuget.org/packages/A2A) `dotnet add package A2A`
 - 🎬 Use our [samples](https://github.com/a2aproject/a2a-samples) to see A2A in action
 
@@ -68,7 +68,7 @@ We welcome community contributions to enhance and evolve the A2A protocol!
 - **Private Feedback:** Use this [Google Form](https://goo.gle/a2a-feedback).
 - **Partner Program:** Google Cloud customers can join our partner program via this [form](https://goo.gle/a2a-partner).
 
-## What's next
+## What's Next
 
 ### Protocol Enhancements
 
